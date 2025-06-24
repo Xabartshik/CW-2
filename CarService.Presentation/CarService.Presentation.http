@@ -1,6 +1,7 @@
 @CarService.Presentation_HostAddress = http://localhost:5217
 
-GET {{CarService.Presentation_HostAddress}}/weatherforecast/
+GET {{CarService.Presentation_HostAddress}}/car/
 Accept: application/json
+
 
 ###

@@ -35,6 +35,8 @@ namespace CarService.Presentation.Controllers
         [HttpPost]
         public ActionResult<Car> Add([FromBody] Car car)
         {
+            if (!Car.Validate(car))
+                return BadRequest("Некорректные данные");
             Cars.Add(car);
             return CreatedAtAction(nameof(Get), new { Id = car.Id }, car);
         }
@@ -55,14 +57,12 @@ namespace CarService.Presentation.Controllers
             var car = Cars.FirstOrDefault(p => p.Id == id);
             if (car == null)
                 return NotFound();
-            if (string.IsNullOrWhiteSpace(updatedCar.Brand) || string.IsNullOrWhiteSpace(updatedCar.Brand) || updatedCar.Year < 1980)
+            if (!Car.Validate(car))
                 return BadRequest("Некорректные данные");
-            car = updatedCar;
-            //Эквивалентно ли такое обновление данных?
-            //car.Model = updatedCar.Model;
-            //car.Brand = updatedCar.Brand;
-            //car.Year = updatedCar.Year;
-            //car.OwnerName = updatedCar.OwnerName;
+            car.Model = updatedCar.Model;
+            car.Brand = updatedCar.Brand;
+            car.Year = updatedCar.Year;
+            car.OwnerName = updatedCar.OwnerName;
             return NoContent();
         }
 

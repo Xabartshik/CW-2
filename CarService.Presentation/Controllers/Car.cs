@@ -50,5 +50,15 @@ namespace CarService.Presentation.Controllers
         public string Model { get; set; }
         public int Year { get; set; }
         public string? OwnerName { get; set; }
+        public static bool Validate(Car car)
+        {
+            if (car == null)
+                return false;
+            if (String.IsNullOrEmpty(car.Brand) || String.IsNullOrEmpty(car.Model))
+                return false;
+            if (car.Year < 1980)
+                return false;
+            return true;
+        }
     }
 }
