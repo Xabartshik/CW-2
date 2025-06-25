@@ -1,18 +1,12 @@
 ﻿using CarService.Application.DTOs;
 using CarService.DAL.Repositories;
 using CarService.Domain;
-using CarService.Domain.Interfaces;
 
 namespace CarService.Application.Services
 {
     public class CarService
     {
-        private readonly ICarRepository _repository;
-
-        public CarService(ICarRepository repository)
-        {
-            _repository = repository;
-        }
+        private readonly CarRepository _repository = new CarRepository();
 
         private CarDto ToDto(Car car)
             => new CarDto(car.Id, car.Brand, car.Model, car.Year, car.OwnerName);
