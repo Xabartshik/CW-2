@@ -1,4 +1,8 @@
 
+using CarService.Application.Services;
+using CarService.DAL.Repositories;
+using CarService.Domain.Interfaces;
+
 namespace CarService.Presentation
 {
     public class Program
@@ -13,6 +17,9 @@ namespace CarService.Presentation
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddScoped<ICarRepository, CarRepository>();
+            builder.Services.AddScoped<CarService.Application.Services.CarService>();
 
             var app = builder.Build();
 

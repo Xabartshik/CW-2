@@ -8,7 +8,12 @@ namespace CarService.Presentation.Controllers
     [Route("[controller]")]
     public class CarController : ControllerBase
     {
-        private readonly CarService.Application.Services.CarService _service = new CarService.Application.Services.CarService();
+        private readonly CarService.Application.Services.CarService _service;
+        
+        public CarController(CarService.Application.Services.CarService service)
+        {
+            _service = service;
+        }
 
         [HttpGet]
         public IEnumerable<CarDto> GetAll()
