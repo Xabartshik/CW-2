@@ -14,7 +14,7 @@ Accept: application/json
   "brand": "TAZ",
   "model": "498",
   "year": 1998,
-  "ownerName": "Иванов И.И."
+  "ownerName": "РРІР°РЅРѕРІ Р.Р."
 }
 DELETE {{CarService.Presentation_HostAddress}}/car/{id}
 Accept: application/json
@@ -26,5 +26,5 @@ Content-Type: application/json
   "brand": "UAZ",
   "model": "408",
   "year": 1990,
-  "ownerName": "Зубенко М.П."
+  "ownerName": "Р—СѓР±РµРЅРєРѕ Рњ.Рџ."
 }
