@@ -54,11 +54,11 @@ namespace CarService.Presentation.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] Car updatedCar)
         {
-            var car = Cars.FirstOrDefault(p => p.Id == id);
-            if (car == null)
+            if (updatedCar == null)
                 return NotFound();
-            if (!Car.Validate(car))
+            if (!Car.Validate(updatedCar))
                 return BadRequest("Некорректные данные");
+            var car = Cars.FirstOrDefault(p => p.Id == id);
             car.Model = updatedCar.Model;
             car.Brand = updatedCar.Brand;
             car.Year = updatedCar.Year;
