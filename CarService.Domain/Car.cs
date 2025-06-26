@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CarService.Presentation.Controllers
+namespace CarService.Domain
 {
     public class Car
     {
@@ -45,16 +45,18 @@ namespace CarService.Presentation.Controllers
         //        _year = value < 1980? 1980 : value;
         //    }
         //}
+        [Required]
         public string Brand { get; set; }
-
+        [Required]
         public string Model { get; set; }
+        [Range(1980, int.MaxValue)]
         public int Year { get; set; }
         public string? OwnerName { get; set; }
         public static bool Validate(Car car)
         {
             if (car == null)
                 return false;
-            if (String.IsNullOrEmpty(car.Brand) || String.IsNullOrEmpty(car.Model))
+            if (string.IsNullOrEmpty(car.Brand) || string.IsNullOrEmpty(car.Model))
                 return false;
             if (car.Year < 1980)
                 return false;

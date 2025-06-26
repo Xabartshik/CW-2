@@ -1,11 +1,13 @@
 @CarService.Presentation_HostAddress = http://localhost:5217
 
+
+GET {{CarService.Presentation_HostAddress}}/car/2
+Accept: application/json
+
 GET {{CarService.Presentation_HostAddress}}/car/
 Accept: application/json
 
 
-GET {{CarService.Presentation_HostAddress}}/car/{id}
-Accept: application/json
 
 POST {{CarService.Presentation_HostAddress}}/car/
 Accept: application/json
