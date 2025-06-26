@@ -1,9 +1,10 @@
 ﻿using CarService.Domain;
+using CarService.Domain.Interfaces;
 using System.Xml.Linq;
 
 namespace CarService.DAL.Repositories
 {
-    public class CarRepository
+    public class CarRepository : ICarRepository
     {
         private static readonly List<Car> _cars = new List<Car>
         {
