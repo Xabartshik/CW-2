@@ -55,7 +55,6 @@ namespace CarService.Presentation.Controllers
             var updated = _service.Update(id, updatedCarDto);
             if (updated == false)
                 return NotFound();
-
             return NoContent();
         }
     }
