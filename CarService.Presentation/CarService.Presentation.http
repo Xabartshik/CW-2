@@ -1,6 +1,32 @@
 @CarService.Presentation_HostAddress = http://localhost:5217
 
-GET {{CarService.Presentation_HostAddress}}/weatherforecast/
+
+GET {{CarService.Presentation_HostAddress}}/car/2
 Accept: application/json
 
-###
+GET {{CarService.Presentation_HostAddress}}/car/
+Accept: application/json
+
+
+
+POST {{CarService.Presentation_HostAddress}}/car/
+Accept: application/json
+{
+  "id": 8,
+  "brand": "TAZ",
+  "model": "498",
+  "year": 1998,
+  "ownerName": "Иванов И.И."
+}
+DELETE {{CarService.Presentation_HostAddress}}/car/{id}
+Accept: application/json
+
+PUT {{CarService.Presentation_HostAddress}}/car/{id}
+Content-Type: application/json
+{
+  "id": 1,
+  "brand": "UAZ",
+  "model": "408",
+  "year": 1990,
+  "ownerName": "Зубенко М.П."
+}
