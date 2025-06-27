@@ -1,5 +1,4 @@
 ﻿using CarService.Application.DTOs;
-using CarService.DAL.Repositories;
 using CarService.Domain;
 using CarService.Domain.Interfaces;
 
@@ -16,16 +15,19 @@ namespace CarService.Application.Services
         private CarDto ToDto(Car car)
             => new CarDto(car.Id, car.Brand, car.Model, car.Year, car.OwnerName);
 
-        public IEnumerable<CarDto> GetAll()
-            => _repository.GetAll().Select(ToDto);
-
-        public CarDto? GetById(int id)
+        public async Task<IEnumerable<CarDto>> GetAll()
         {
-            var car = _repository.GetById(id);
+            var result = await _repository.GetAllAsync();
+            return result.Select(ToDto);
+        }
+
+        public async Task<CarDto?> GetById(int id)
+        {
+            var car = await _repository.GetByIdAsync(id);
             return car == null ? null : ToDto(car);
         }
 
-        public void Add(CarDto dto)
+        public async Task Add(CarDto dto)
         {
             var car = new Car
             {
@@ -35,12 +37,12 @@ namespace CarService.Application.Services
                 Year = dto.Year,
                 OwnerName = dto.OwnerName
             };
-            _repository.Add(car);
+            await _repository.AddAsync(car);
         }
 
-        public bool Remove(int id) => _repository.Remove(id);
+        public async Task<bool> Remove(int id) => await _repository.RemoveAsync(id);
 
-        public bool Update(int id, CarDto dto)
+        public async Task<bool> Update(int id, CarDto dto)
         {
             var car = new Car
             {
@@ -50,7 +52,7 @@ namespace CarService.Application.Services
                 Year = dto.Year,
                 OwnerName = dto.OwnerName
             };
-            return _repository.Update(car);
+            return await _repository.UpdateAsync(car);
         }
     }
 }

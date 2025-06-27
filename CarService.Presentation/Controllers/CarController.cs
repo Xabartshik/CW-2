@@ -14,29 +14,33 @@ namespace CarService.Presentation.Controllers
         {
             _service = service;
         }
+
+
+
         [HttpGet]
-        public IEnumerable<CarDto> GetAll()
+        public async Task<IEnumerable<CarDto>> GetAll()
         {
-            return _service.GetAll();
+            return await _service.GetAll();
         }
 
         [HttpGet("{id}")]
-        public ActionResult<CarDto?> Get(int id)
+        public async Task<ActionResult<CarDto?>> Get(int id)
         {
-            return _service.GetById(id);
+            var result = await _service.GetById(id);
+            return result is null ? NotFound() : result;
         }
 
         [HttpPost]
-        public ActionResult<CarDto> Add([FromBody] CarDto carDto)
+        public async Task<ActionResult<CarDto>> Add([FromBody] CarDto carDto)
         {
-            _service.Add(carDto);
+            await _service.Add(carDto);
             return CreatedAtAction(nameof(Get), new { id = carDto.Id }, carDto);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var result = _service.Remove(id);
+            var result = await _service.Remove(id);
             if (result == false)
                 return NotFound();
 
@@ -44,7 +48,7 @@ namespace CarService.Presentation.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] CarDto updatedCarDto)
+        public async Task<IActionResult> Update(int id, [FromBody] CarDto updatedCarDto)
         {
             // Валидация входных данных
             if (string.IsNullOrWhiteSpace(updatedCarDto.Brand) ||
@@ -52,7 +56,7 @@ namespace CarService.Presentation.Controllers
                 updatedCarDto.Year < 1980)
                 return BadRequest("Некорректные данные");
 
-            var updated = _service.Update(id, updatedCarDto);
+            var updated = await _service.Update(id, updatedCarDto);
             if (updated == false)
                 return NotFound();
             return NoContent();

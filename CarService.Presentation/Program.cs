@@ -1,5 +1,7 @@
 
 using CarService.Application.Services;
+using CarService.DAL.Infrastructure;
+using CarService.DAL.Interface;
 using CarService.DAL.Repositories;
 using CarService.Domain.Interfaces;
 
@@ -18,9 +20,9 @@ namespace CarService.Presentation
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
             builder.Services.AddScoped<ICarRepository, CarRepository>();
             builder.Services.AddScoped<CarService.Application.Services.CarService>();
-
 
 
             var app = builder.Build();
