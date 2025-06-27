@@ -5,6 +5,7 @@ docker-compose logs postgres -- посмотреть логи
 
 Сервер:
 
+Адрес БД: Postgres
 Обслуживающая БД: carservice_db
 ЮЗверь: carservice_user
 Пароль: carservice_password
