@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 
-
 namespace CarService.DAL.Infrastructure
 {
     public class DbConnectionFactory : IDbConnectionFactory

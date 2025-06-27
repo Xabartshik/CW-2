@@ -15,7 +15,6 @@ namespace CarService.DAL.Repositories
             _connectionFactory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
-        
         public async Task<Car?> GetByIdAsync(int id)
         {
             using var connection = _connectionFactory.CreateConnection();
