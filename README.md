@@ -1,15 +1,15 @@
-docker-compose up -d -- запустить 
-docker-compose down -- закрыть
-docker-compose down -v -- закрыть с потерей данных
-docker-compose logs postgres -- посмотреть логи
+docker-compose up -d -- Р·Р°РїСѓСЃС‚РёС‚СЊ 
+docker-compose down -- Р·Р°РєСЂС‹С‚СЊ
+docker-compose down -v -- Р·Р°РєСЂС‹С‚СЊ СЃ РїРѕС‚РµСЂРµР№ РґР°РЅРЅС‹С…
+docker-compose logs postgres -- РїРѕСЃРјРѕС‚СЂРµС‚СЊ Р»РѕРіРё
 
-Сервер:
+РЎРµСЂРІРµСЂ:
 
-Обслуживающая БД: carservice_db
-ЮЗверь: carservice_user
-Пароль: carservice_password
+РћР±СЃР»СѓР¶РёРІР°СЋС‰Р°СЏ Р‘Р”: carservice_db
+Р®Р—РІРµСЂСЊ: carservice_user
+РџР°СЂРѕР»СЊ: carservice_password
 
-Вход в PG Admin:
+Р’С…РѕРґ РІ PG Admin:
 
 admin@carservice.com
 admin123
