@@ -15,7 +15,7 @@ namespace CarService.Presentation
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Настройка Serilog из конфигурации
+            // РќР°СЃС‚СЂРѕР№РєР° Serilog РёР· РєРѕРЅС„РёРіСѓСЂР°С†РёРё
             builder.Host.UseSerilog((context, configuration) =>
                 configuration.ReadFrom.Configuration(context.Configuration));
 
@@ -36,7 +36,7 @@ namespace CarService.Presentation
             var app = builder.Build();
             try
             {
-                Log.Information("Запуск приложения {AppName} версии {AppVersion}",
+                Log.Information("Р—Р°РїСѓСЃРє РїСЂРёР»РѕР¶РµРЅРёСЏ {AppName} РІРµСЂСЃРёРё {AppVersion}",
                     builder.Configuration["AppSettings:AppName"],
                     builder.Configuration["AppSettings:AppVersion"]);
 
@@ -50,14 +50,14 @@ namespace CarService.Presentation
 
 
                 app.MapControllers();
-                Log.Information("Приложение настроено и готово к работе на порту {Port}",
+                Log.Information("РџСЂРёР»РѕР¶РµРЅРёРµ РЅР°СЃС‚СЂРѕРµРЅРѕ Рё РіРѕС‚РѕРІРѕ Рє СЂР°Р±РѕС‚Рµ РЅР° РїРѕСЂС‚Сѓ {Port}",
     builder.Configuration["urls"] ?? "default");
-                Console.WriteLine("Тест");
+                Console.WriteLine("РўРµСЃС‚");
                 app.Run();
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Критическая ошибка при запуске приложения");
+                Log.Fatal(ex, "РљСЂРёС‚РёС‡РµСЃРєР°СЏ РѕС€РёР±РєР° РїСЂРё Р·Р°РїСѓСЃРєРµ РїСЂРёР»РѕР¶РµРЅРёСЏ");
             }
             finally
             {
