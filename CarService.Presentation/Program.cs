@@ -39,11 +39,10 @@ namespace CarService.Presentation
                 Log.Information("Запуск приложения {AppName} версии {AppVersion}",
                     builder.Configuration["AppSettings:AppName"],
                     builder.Configuration["AppSettings:AppVersion"]);
-                if (app.Environment.IsDevelopment())
-                {
+
                     app.UseSwagger();
                     app.UseSwaggerUI();
-                }
+
 
                 app.UseHttpsRedirection();
 

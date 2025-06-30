@@ -1,7 +1,10 @@
 ﻿using CarService.Application.DTOs;
 using CarService.Application.Services;
+using CarService.Application.Settings;
 using CarService.Domain;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace CarService.Presentation.Controllers
 {
@@ -11,10 +14,12 @@ namespace CarService.Presentation.Controllers
     {
         private readonly CarService.Application.Services.CarService _service;
         private readonly ILogger<CarController> _logger;
-        public CarController(CarService.Application.Services.CarService service, ILogger<CarController> logger)
+        private readonly AppSettings _appSettings;
+        public CarController(CarService.Application.Services.CarService service, ILogger<CarController> logger, IOptions<AppSettings> options)
         {
             _service = service;
             _logger = logger;
+            _appSettings = options.Value;
         }
 
 
@@ -49,6 +54,13 @@ namespace CarService.Presentation.Controllers
         public async Task<ActionResult<CarDto>> Add([FromBody] CarDto carDto)
         {
             _logger.LogInformation("Получен HTTP запрос на добавление машины");
+            if (string.IsNullOrWhiteSpace(carDto.Brand) ||
+    string.IsNullOrWhiteSpace(carDto.Model) ||
+    carDto.Year < 1980 || carDto.Year > _appSettings.MaxYear)
+            {
+                _logger.LogWarning("Некорректные данные о машине не позволяют добавить данные в репозитории");
+                return BadRequest("Некорректные данные");
+            }
             await _service.Add(carDto);
             _logger.LogInformation("Машина добавлена в репозиторий");
             return CreatedAtAction(nameof(Get), new { id = carDto.Id }, carDto);
@@ -75,7 +87,7 @@ namespace CarService.Presentation.Controllers
             // Валидация входных данных
             if (string.IsNullOrWhiteSpace(updatedCarDto.Brand) ||
                 string.IsNullOrWhiteSpace(updatedCarDto.Model) ||
-                updatedCarDto.Year < 1980)
+                updatedCarDto.Year < 1980 || updatedCarDto.Year > _appSettings.MaxYear)
             {
                 _logger.LogWarning("Некорректные данные о машине не позволяют обновить данные в репозитории");
                 return BadRequest("Некорректные данные");
@@ -107,6 +119,26 @@ namespace CarService.Presentation.Controllers
 
                 return StatusCode(500, "Внутренняя ошибка сервера");
             }
+        }
+        [HttpGet("info")]
+        public ActionResult<object> GetApplicationInfo()
+        {
+            var appName = _appSettings.AppName;
+            var appVersion = _appSettings.AppVersion;
+            var maxItems = _appSettings.MaxItemsPerPage;
+            var enableDetailedLogging = _appSettings.EnableDetailedLogging;
+            var maxYear = _appSettings.MaxYear;
+            _logger.LogInformation("Запрос информации о приложении");
+
+            return Ok(new
+            {
+                ApplicationName = appName,
+                AppVersion = appVersion,
+                MaxItemsPerPage = maxItems,
+                EnableDetailedLogging = enableDetailedLogging,
+                MaxYear = maxYear,
+                Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"
+            });
         }
     }
 }

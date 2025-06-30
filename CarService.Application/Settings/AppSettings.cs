@@ -16,5 +16,7 @@ namespace CarService.Application.Settings
         public bool EnableDetailedLogging { get; set; } = false;
 
         public int MaxItemsPerPage { get; set; } = 10;
+
+        public int MaxYear { get; set; } = 2200;
     }
 }
