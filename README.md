@@ -14,3 +14,10 @@ docker-compose logs postgres -- посмотреть логи
 
 admin@carservice.com
 admin123
+
+Verbose:
+ПОкажет стек выозовов
+Debug:
+Что делает функция
+Information:
+В какую функцию код зашел
