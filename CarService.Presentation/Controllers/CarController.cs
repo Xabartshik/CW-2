@@ -33,6 +33,26 @@ namespace CarService.Presentation.Controllers
             return result;
         }
 
+        [HttpGet("/history")]
+        public async Task<IEnumerable<CarServiceHistoryDto>> GetHistory([FromQuery] int? id = null)
+        {
+            if (id is null || !id.HasValue)
+            {
+                _logger.LogInformation("Получен HTTP запрос на получение истории всех машин");
+                var result = await _service.GetCarServiceHistoryAsync();
+                _logger.LogInformation("Возвращена история для {count} машин", result.Count());
+                return result;
+            }
+            else
+            {
+                _logger.LogInformation("Получен HTTP запрос на получение истории всех машин");
+                var result = await _service.GetCarServiceHistoryByCarIdAsync(id.Value);
+                _logger.LogInformation("Возвращена история для {count} машин", result.Count());
+                return result;
+            }
+        }
+
+
         [HttpGet("{id}")]
         public async Task<ActionResult<CarDto?>> Get(int id)
         {

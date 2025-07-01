@@ -21,7 +21,43 @@ namespace CarService.Application.Services
             _appSettings = options.Value;
         }
         private CarDto ToDto(Car car)
-            => new CarDto(car.Id, car.Brand, car.Model, car.Year, car.OwnerName);
+            => new CarDto(car.Id, car.Brand, car.Model, car.Year, car.OwnerName, car.CreatedAt);
+        private Car FromDto(CarDto dto)
+        {
+            var car = new Car
+            {
+                Id = dto.Id,
+                Brand = dto.Brand,
+                Model = dto.Model,
+                Year = dto.Year,
+                OwnerName = dto.OwnerName,
+                CreatedAt = dto.CreatedAt,
+            };
+            return car;
+        }
+
+        private CarServiceHistoryDto ToDto(CarServiceHistory domain)
+        {
+            CarServiceHistoryDto dto = new CarServiceHistoryDto(domain.CarId, domain.ServiceId, domain.Brand, domain.Model,
+                domain.ServiceName, domain.ServicePrice, domain.ServiceStatus, domain.ServiceDate);
+            return dto;
+        }
+
+        private CarServiceHistory FromDto(CarServiceHistoryDto dto)
+        {
+            var domain = new CarServiceHistory
+            {
+                CarId = dto.CarId,
+                ServiceId = dto.ServiceId,
+                Brand = dto.Brand,
+                Model = dto.Model,
+                ServiceName = dto.ServiceName,
+                ServicePrice = dto.ServicePrice,
+                ServiceStatus = dto.ServiceStatus,
+                ServiceDate = dto.ServiceDate
+            };
+            return domain;
+        }
 
         public async Task<IEnumerable<CarDto>> GetAll()
         {
@@ -80,15 +116,8 @@ namespace CarService.Application.Services
             _logger.LogInformation("Добавление машины");
             try
             {
-                var car = new Car
-                {
-                    Id = dto.Id,
-                    Brand = dto.Brand,
-                    Model = dto.Model,
-                    Year = dto.Year,
-                    OwnerName = dto.OwnerName
-                };
-                await _repository.AddAsync(car);
+
+                await _repository.AddAsync(FromDto(dto));
 
             }
             catch (Exception ex)
@@ -135,15 +164,8 @@ namespace CarService.Application.Services
             _logger.LogInformation("Обновление данных машины");
             try
             {
-                var car = new Car
-                {
-                    Id = id,
-                    Brand = dto.Brand,
-                    Model = dto.Model,
-                    Year = dto.Year,
-                    OwnerName = dto.OwnerName
-                };
-                if (await _repository.UpdateAsync(car))
+
+                if (await _repository.UpdateAsync(FromDto(dto)))
                 {
                     _logger.LogInformation("Машина обновлена по ID: {ShopID}", id);
                     return true;
@@ -154,6 +176,46 @@ namespace CarService.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка в Update при обновлении машины по {ShopID}", id);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<CarServiceHistoryDto>> GetCarServiceHistoryAsync()
+        {
+            if (_appSettings.EnableDetailedLogging)
+            {
+                _logger.LogTrace("Вызов процедуры GetCarServiceHistoryAsync");
+                _logger.LogDebug("Процедура для получения списка машин и их истории обслуживания");
+            }
+            _logger.LogInformation("Создание истории обслуживания");
+            try
+            {
+                var result = await _repository.GetCarServiceHistoryAsync();
+                return result.Select(ToDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка в GetCarServiceHistoryAsync при создании истории обслуживания машин");
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<CarServiceHistoryDto>> GetCarServiceHistoryByCarIdAsync(int id)
+        {
+            if (_appSettings.EnableDetailedLogging)
+            {
+                _logger.LogTrace("Вызов процедуры GetCarServiceHistoryAsync");
+                _logger.LogDebug("Процедура для получения истории обслуживания для машины {carId}", id);
+            }
+            _logger.LogInformation("Создание истории обслуживания для машины {carId}", id);
+            try
+            {
+                var result = await _repository.GetCarServiceHistoryAsync();
+                return result.Where(r => r.CarId == id).Select(ToDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка в GetCarServiceHistoryAsync при получения истории обслуживания для машины {carId}", id);
                 throw;
             }
         }

@@ -7,5 +7,6 @@
         Task AddAsync(Car car);
         Task<bool> RemoveAsync(int id);
         Task<bool> UpdateAsync(Car car);
+        Task<IEnumerable<CarServiceHistory>> GetCarServiceHistoryAsync();
     }
 }

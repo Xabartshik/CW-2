@@ -1,7 +1,10 @@
 ﻿using CarService.DAL.Infrastructure;
 using CarService.DAL.Interface;
+using CarService.DAL.Mapper;
+using CarService.DAL.Model;
 using CarService.Domain;
 using CarService.Domain.Interfaces;
+using LinqToDB;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using System.Data;
@@ -10,10 +13,11 @@ namespace CarService.DAL.Repositories
 {
     public class CarRepository : ICarRepository
     {
-        private readonly IDbConnectionFactory _connectionFactory;
+        private readonly ICarDataConnection _db;
         private readonly ILogger<CarRepository> _logger;
-        public CarRepository(IDbConnectionFactory factory, ILogger<CarRepository> logger) {
-            _connectionFactory = factory ?? throw new ArgumentNullException(nameof(factory));
+        public CarRepository(ICarDataConnection db, ILogger<CarRepository> logger)
+        {
+            _db = db ?? throw new ArgumentNullException(nameof(db));
             _logger = logger;
         }
 
@@ -22,28 +26,11 @@ namespace CarService.DAL.Repositories
             _logger.LogInformation("Поиск машины в БД по ID: {id}", id);
             try
             {
-                using var connection = _connectionFactory.CreateConnection();
-                await connection.OpenAsync();
-
-                using var command = new NpgsqlCommand("Select brand, model, year, ownername, id from cars where id = @id", connection);
-                command.Parameters.AddWithValue("@id", id);
-
-                using var reader = await command.ExecuteReaderAsync();
-
-                if (await reader.ReadAsync())
-                {
-                    return new Car
-                    {
-                        Id = reader.GetInt32("id"),
-                        Brand = reader.GetString("brand"),
-                        Model = reader.GetString("model"),
-                        Year = reader.GetInt32("year"),
-                        OwnerName = reader["ownername"] is null ? reader.GetString("ownername") : null
-                    };
-                }
-                return null;
+                var car = await _db.Cars.FirstOrDefaultAsync(p => p.Id == id);
+                return car?.ToDomain();
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError(ex, "Ошибка при получении машины по ID");
                 throw;
             }
@@ -55,26 +42,8 @@ namespace CarService.DAL.Repositories
             _logger.LogInformation("Поиск всех машин в БД");
             try
             {
-                var cars = new List<Car>();
-                using var connection = _connectionFactory.CreateConnection();
-                await connection.OpenAsync();
-
-                using var command = new NpgsqlCommand("Select brand, model, year, ownername, id from cars", connection);
-
-                using var reader = await command.ExecuteReaderAsync();
-
-                while (await reader.ReadAsync())
-                {
-                    cars.Add(new Car()
-                    {
-                        Id = reader.GetInt32("id"),
-                        Brand = reader.GetString("brand"),
-                        Model = reader.GetString("model"),
-                        Year = reader.GetInt32("year"),
-                        OwnerName = reader["ownername"] is null ? reader.GetString("ownername") : null
-                    });
-                }
-                return cars;
+                var carModel = await _db.Cars.ToListAsync();
+                return carModel.Select(c => c.ToDomain());
             }
             catch (Exception ex)
             {
@@ -92,24 +61,15 @@ namespace CarService.DAL.Repositories
                 {
                     throw new ArgumentNullException(nameof(car));
                 }
-
-
-                using var connection = _connectionFactory.CreateConnection();
-                await connection.OpenAsync();
-                using var command = new NpgsqlCommand("Insert into cars (brand, model, year, ownername) values (@brand, @model, @year, @ownername)", connection);
-                command.Parameters.AddWithValue("@brand", car.Brand);
-                command.Parameters.AddWithValue("@model", car.Model);
-                command.Parameters.AddWithValue("@year", car.Year);
-                command.Parameters.AddWithValue("@ownername", car.OwnerName);
-
-                await command.ExecuteNonQueryAsync();
+                var model = car.ToModel();
+                await _db.InsertAsync(model);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при добавлении машины в БД");
                 throw;
             }
-            
+
         }
 
         public async Task<bool> RemoveAsync(int id)
@@ -117,13 +77,11 @@ namespace CarService.DAL.Repositories
             _logger.LogInformation("Удаление машины из БД");
             try
             {
-                using var connection = _connectionFactory.CreateConnection();
-                await connection.OpenAsync();
+                var car = await _db.Cars.FirstOrDefaultAsync(c => c.Id == id);
+                if (car is null)
+                    return false;
+                return await _db.DeleteAsync(car) > 0;
 
-                using var command = new NpgsqlCommand("Delete from cars where id = @id", connection);
-                command.Parameters.AddWithValue("@id", id);
-
-                return await command.ExecuteNonQueryAsync() > 0;
             }
             catch (Exception ex)
             {
@@ -138,18 +96,9 @@ namespace CarService.DAL.Repositories
             _logger.LogInformation("Обновление машины в БД");
             try
             {
-                using var connection = _connectionFactory.CreateConnection();
-                await connection.OpenAsync();
-
-                using var command = new NpgsqlCommand("Update cars set brand = @brand, model = @model, year = @year, ownername = @ownername where id = @id", connection);
-
-                command.Parameters.AddWithValue("@id", car.Id);
-                command.Parameters.AddWithValue("@brand", car.Brand);
-                command.Parameters.AddWithValue("@model", car.Model);
-                command.Parameters.AddWithValue("@year", car.Year);
-                command.Parameters.AddWithValue("@ownername", car.OwnerName);
-
-                return await command.ExecuteNonQueryAsync() > 0;
+                if (car is null)
+                    return false;
+                return await _db.UpdateAsync(car.ToModel()) > 0;
             }
             catch (Exception ex)
             {
@@ -157,6 +106,29 @@ namespace CarService.DAL.Repositories
                 throw;
             }
 
+        }
+        public async Task<IEnumerable<CarServiceHistory>> GetCarServiceHistoryAsync()
+        {
+            var query = from sr in _db.ServiceRecords
+                        join c in _db.Cars on sr.CarId equals c.Id
+                        join s in _db.Services on sr.ServiceId equals s.Id orderby c.Id
+                        select new CarServiceHistory
+                        {
+                            CarId = c.Id, 
+                            ServiceId = s.Id,
+                            Brand = c.Brand,
+                            Model = c.Model,
+                            ServiceName = s.Name,
+                            ServicePrice = s.Price,
+                            ServiceStatus = sr.Status,
+                            ServiceDate = sr.Date
+                        };
+            var results = await query.ToListAsync();
+
+            return results;
+
+            //    public record CarServiceHistoryDto(int CarId, int ServiceId, string Brand, string Model, string ServiceName,
+            //double ServicePrice, string ServiceStatus, DateTime ServiceDate);
         }
     }
 }
