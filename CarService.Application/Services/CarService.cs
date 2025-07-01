@@ -30,7 +30,8 @@ namespace CarService.Application.Services
                 Brand = dto.Brand,
                 Model = dto.Model,
                 Year = dto.Year,
-                OwnerName = dto.OwnerName
+                OwnerName = dto.OwnerName,
+                CreatedAt = dto.CreatedAt,
             };
             return car;
         }

@@ -25,19 +25,19 @@ namespace CarService.DAL.Infrastructure
         public ITable<ServiceModel> Services => this.GetTable<ServiceModel>();
         public ITable<ServiceRecordModel> ServiceRecords => this.GetTable<ServiceRecordModel>();
 
-        public async Task<int> DeleteAsync<T>(T entity) where T : class
-        {
-            return await DeleteAsync(entity);
-        }
-
         public async Task<int> InsertAsync<T>(T entity) where T : class
         {
-            return await InsertAsync(entity);
+            return await DataExtensions.InsertAsync(this, entity);
         }
 
         public async Task<int> UpdateAsync<T>(T entity) where T : class
         {
-            return await UpdateAsync(entity);
+            return await DataExtensions.UpdateAsync(this, entity);
+        }
+
+        public async Task<int> DeleteAsync<T>(T entity) where T : class
+        {
+            return await DataExtensions.DeleteAsync(this, entity);
         }
     }
 }

@@ -14,8 +14,7 @@ namespace CarService.DAL.Model
         [PrimaryKey, Identity]
         public int Id { get; set; }
 
-        [NotNull]
-        [Column("brand")]
+        [Column("brand"), NotNull]
         public string Brand { get; set; }
 
         [NotNull]

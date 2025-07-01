@@ -61,7 +61,8 @@ namespace CarService.DAL.Repositories
                 {
                     throw new ArgumentNullException(nameof(car));
                 }
-                await _db.InsertAsync(car.ToModel());
+                var model = car.ToModel();
+                await _db.InsertAsync(model);
             }
             catch (Exception ex)
             {
