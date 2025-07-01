@@ -3,7 +3,6 @@ using ServiceService.Domain.Interfaces;
 using LinqToDB;
 using Microsoft.Extensions.Logging;
 using Npgsql;
-using ServiceService.Domain.Interfaces;
 using System.Data;
 using CarService.Domain;
 using CarService.DAL.Interface;
