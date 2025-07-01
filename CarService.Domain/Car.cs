@@ -52,6 +52,9 @@ namespace CarService.Domain
         [Range(1980, int.MaxValue)]
         public int Year { get; set; }
         public string? OwnerName { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
         public static bool Validate(Car car)
         {
             if (car == null)

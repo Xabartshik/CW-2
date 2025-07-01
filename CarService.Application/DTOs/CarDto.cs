@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace CarService.Application.DTOs
 {
-    public record CarDto(int Id, string Brand, string Model, int Year, string? OwnerName);
+    public record CarDto(int Id, string Brand, string Model, int Year, string? OwnerName, DateTime CreatedAt);
 }

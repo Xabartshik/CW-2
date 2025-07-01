@@ -28,7 +28,7 @@ namespace CarService.Presentation
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
+            builder.Services.AddScoped<ICarDataConnection, CarDataConnection>();
             builder.Services.AddScoped<ICarRepository, CarRepository>();
             builder.Services.AddScoped<CarService.Application.Services.CarService>();
 
